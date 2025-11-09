@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  username    String   @unique
+  email       String   @unique
+  password    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  ratings     Rating[]
+  watchlist   WatchlistItem[]
+
+  @@map("users")
+}
+
+model Movie {
+  id          String   @id @default(cuid())
+  title       String
+  genre       String   // Stored as comma-separated string
+  year        Int
+  description String
+  director    String?
+  actors      String?  // Stored as comma-separated string
+  rating      Float?
+  imageUrl    String?
+  runtime     Int?     // in minutes
+  language    String?
+  country     String?
+  imdbId      String?  @unique
+  tmdbId      Int?     @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  ratings     Rating[]
+  watchlist   WatchlistItem[]
+
+  @@map("movies")
+}
+
+model Rating {
+  id        String   @id @default(cuid())
+  rating    Int      // 1-5 stars
+  liked     Boolean
+  review    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Foreign keys
+  userId    String
+  movieId   String
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  // Composite unique constraint - one rating per user per movie
+  @@unique([userId, movieId])
+  @@map("ratings")
+}
+
+model WatchlistItem {
+  id       String   @id @default(cuid())
+  priority String   @default("medium") // "low", "medium", "high"
+  notes    String?
+  addedAt  DateTime @default(now())
+
+  // Foreign keys
+  userId   String
+  movieId  String
+
+  // Relations
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie    Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  // Composite unique constraint - one watchlist item per user per movie
+  @@unique([userId, movieId])
+  @@map("watchlist_items")
+}

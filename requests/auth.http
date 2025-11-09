@@ -1,0 +1,48 @@
+### Variables
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+### Health Check
+GET {{baseUrl}}/health
+
+### Register User
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "username": "moviefan",
+  "email": "moviefan8@example.com",
+  "password": "password123"
+}
+
+### Login User
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "moviefan8@example.com",
+  "password": "password123"
+}
+
+### Get User Profile (requires token)
+GET {{baseUrl}}/api/auth/profile
+Authorization: Bearer {{token}}
+
+### Register Another User for Testing
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "username": "testuser2",
+  "email": "test2@example.com",
+  "password": "password123"
+}
+
+### Login Second User
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "test2@example.com",
+  "password": "password123"
+}

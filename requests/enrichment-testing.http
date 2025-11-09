@@ -1,0 +1,85 @@
+### Movie Enrichment API Testing
+
+### Variables
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWJ6OXkyazgwMDAwMjY0OXg4bmk5N3piIiwiaWF0IjoxNzUwMDg5MzY0LCJleHAiOjE3NTAxNzU3NjR9.cmV3jS7qiGaTpIdMszzQq9LY50vWKIq42JbXJvh_4kM
+
+### Setup: Get authentication token
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "moviefan8@example.com",
+  "password": "password123"
+}
+
+### 1. Analyze Missing Movie Data
+GET {{baseUrl}}/api/enrichment/analysis/missing-data
+
+### 2. Get Movie Recommendations by Movie ID
+GET {{baseUrl}}/api/enrichment/movies/movie_id_here/recommendations?limit=10
+
+### 3. Get Similar Movies by Movie ID
+GET {{baseUrl}}/api/enrichment/movies/movie_id_here/similar?limit=5
+
+### 4. Enrich Single Movie (Requires Auth)
+POST {{baseUrl}}/api/enrichment/movies/movie_id_here/enrich
+Authorization: Bearer {{token}}
+
+### 5. Update Movie Metadata (Requires Auth)
+PUT {{baseUrl}}/api/enrichment/movies/movie_id_here/metadata
+Authorization: Bearer {{token}}
+
+### 6. Bulk Enrich All Movies (Requires Auth) - Use Carefully!
+### This can take a long time and hit TMDB rate limits
+POST {{baseUrl}}/api/enrichment/movies/enrich-all
+Authorization: Bearer {{token}}
+
+### 7. Test Workflow: Create -> Import -> Enrich
+
+### First, search for a movie on TMDB
+GET {{baseUrl}}/api/tmdb/search?query=Inception
+
+### Import movie from TMDB
+POST {{baseUrl}}/api/tmdb/import/27205
+Authorization: Bearer {{token}}
+
+### Get the imported movie to find its local ID
+GET {{baseUrl}}/api/movies/search?query=Inception
+
+### Use the local movie ID to get recommendations
+GET {{baseUrl}}/api/enrichment/movies/cmbza22to00012649ja3kvk9m/recommendations
+
+### Get similar movies
+GET {{baseUrl}}/api/enrichment/movies/cmbza22to00012649ja3kvk9m/similar
+
+### Update movie metadata to latest TMDB data
+PUT {{baseUrl}}/api/enrichment/movies/cmbza22to00012649ja3kvk9m/metadata
+Authorization: Bearer {{token}}
+
+### 8. Error Testing
+
+### Invalid movie ID
+GET {{baseUrl}}/api/enrichment/movies/invalid_id/recommendations
+
+### Non-existent movie ID
+GET {{baseUrl}}/api/enrichment/movies/999999/similar
+
+### Unauthorized enrichment attempt
+POST {{baseUrl}}/api/enrichment/movies/movie_id_here/enrich
+
+### 9. Performance Testing
+
+### Test multiple recommendation requests
+GET {{baseUrl}}/api/enrichment/movies/cmbza22to00012649ja3kvk9m/recommendations
+###
+GET {{baseUrl}}/api/enrichment/movies/cmbza22to00012649ja3kvk9m/recommendations
+###
+GET {{baseUrl}}/api/enrichment/movies/cmbza22to00012649ja3kvk9m/recommendations
+
+### Notes:
+### - Replace movie_id_here with actual movie IDs from your database
+### - The enrich-all endpoint should be used sparingly due to TMDB rate limits
+### - Recommendations and similar movies require TMDB integration
+### - All enrichment features work best with movies that have TMDB IDs

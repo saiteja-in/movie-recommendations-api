@@ -1,0 +1,178 @@
+### TMDB Integration Testing - Real Movie Data from The Movie Database
+
+### Variables
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@token = your-jwt-token-here
+
+### Setup Instructions:
+### 1. Get TMDB API key from https://www.themoviedb.org/settings/api
+### 2. Add TMDB_API_KEY=your-api-key to .env file
+### 3. Restart the server
+### 4. Run these requests to test TMDB integration
+
+### 1. Test TMDB Connectivity
+
+### Get TMDB Genres
+GET {{baseUrl}}/api/tmdb/genres
+
+### Get Trending Movies (This Week)
+GET {{baseUrl}}/api/tmdb/trending
+
+### Get Trending Movies (Today)
+GET {{baseUrl}}/api/tmdb/trending?timeWindow=day
+
+### 2. Search and Discovery
+
+### Search Movies from TMDB
+GET {{baseUrl}}/api/tmdb/search?query=Marvel
+
+### Search Specific Movie
+GET {{baseUrl}}/api/tmdb/search?query=Inception
+
+### Search with Pagination
+GET {{baseUrl}}/api/tmdb/search?query=Batman&page=2
+
+### Get Popular Movies
+GET {{baseUrl}}/api/tmdb/popular
+
+### Get Popular Movies (Page 2)
+GET {{baseUrl}}/api/tmdb/popular?page=2
+
+### Get Top Rated Movies
+GET {{baseUrl}}/api/tmdb/top-rated
+
+### Get Movies by Genre (Action = 28)
+GET {{baseUrl}}/api/tmdb/genre/28
+
+### Get Movies by Genre (Comedy = 35)
+GET {{baseUrl}}/api/tmdb/genre/35
+
+### Get Movies by Genre (Sci-Fi = 878)
+GET {{baseUrl}}/api/tmdb/genre/878
+
+### 3. Import Movies to Database (Requires Authentication)
+
+### Import Single Movie by TMDB ID (Inception = 27205)
+POST {{baseUrl}}/api/tmdb/import/27205
+Authorization: Bearer {{token}}
+
+### Import Another Movie (The Dark Knight = 155)
+POST {{baseUrl}}/api/tmdb/import/155
+Authorization: Bearer {{token}}
+
+### Import Popular Movies (Bulk Import - 10 movies)
+POST {{baseUrl}}/api/tmdb/import/popular?limit=10
+Authorization: Bearer {{token}}
+
+### Import More Popular Movies (20 movies)
+POST {{baseUrl}}/api/tmdb/import/popular?limit=20
+Authorization: Bearer {{token}}
+
+### 4. Verify Imported Movies in Local Database
+
+### Search Local Database After Import
+GET {{baseUrl}}/api/movies/search?query=Batman
+
+### Get All Movies (Should now include TMDB movies)
+GET {{baseUrl}}/api/movies?limit=10
+
+### Search Local Movies by Genre
+GET {{baseUrl}}/api/movies/search?genre=action
+
+### 5. Test Full Workflow
+
+### Register User (if needed)
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "username": "tmdb_user",
+  "email": "tmdb@example.com",
+  "password": "password123"
+}
+
+### Login to Get Token
+# @name loginUser
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "tmdb@example.com",
+  "password": "password123"
+}
+
+### Extract Token
+@userToken = {{loginUser.response.body.data.token}}
+
+### Search TMDB Movies
+GET {{baseUrl}}/api/tmdb/search?query=Avengers
+
+### Import Found Movie (Avengers Endgame = 299534)
+POST {{baseUrl}}/api/tmdb/import/299534
+Authorization: Bearer {{userToken}}
+
+### Rate the Imported Movie
+POST {{baseUrl}}/api/ratings/movie/movie_id_here
+Content-Type: {{contentType}}
+Authorization: Bearer {{userToken}}
+
+{
+  "rating": 5,
+  "liked": true,
+  "review": "Amazing movie! The TMDB integration works perfectly."
+}
+
+### Get Recommendations (Now includes TMDB movies)
+GET {{baseUrl}}/api/recommendations?algorithm=hybrid
+Authorization: Bearer {{userToken}}
+
+### 6. Advanced TMDB Features
+
+### Get Movies from Multiple Genres
+GET {{baseUrl}}/api/tmdb/genre/878?page=1
+###
+GET {{baseUrl}}/api/tmdb/genre/28?page=1
+
+### Compare Local Search vs TMDB Search
+
+### Local Database Search
+GET {{baseUrl}}/api/movies/search?query=Matrix
+
+### TMDB Search (External)
+GET {{baseUrl}}/api/tmdb/search?query=Matrix
+
+### 7. Error Testing
+
+### Try to Import Same Movie Twice (Should Get Conflict)
+POST {{baseUrl}}/api/tmdb/import/27205
+Authorization: Bearer {{userToken}}
+
+### Invalid TMDB ID
+POST {{baseUrl}}/api/tmdb/import/999999999
+Authorization: Bearer {{userToken}}
+
+### Invalid Search Query
+GET {{baseUrl}}/api/tmdb/search
+
+### 8. Performance Testing
+
+### Search Multiple Queries Rapidly
+GET {{baseUrl}}/api/tmdb/search?query=Star Wars
+###
+GET {{baseUrl}}/api/tmdb/search?query=Marvel
+###
+GET {{baseUrl}}/api/tmdb/search?query=DC Comics
+###
+GET {{baseUrl}}/api/tmdb/search?query=Disney
+
+### Large Bulk Import (50 movies - use carefully!)
+# POST {{baseUrl}}/api/tmdb/import/popular?limit=50
+# Authorization: Bearer {{userToken}}
+
+### Notes:
+### - TMDB API has rate limits (40 requests per 10 seconds)
+### - Images are automatically included with full URLs
+### - Movie IDs from TMDB are prefixed with "tmdb_" in our system
+### - All imported movies get rich metadata: cast, director, runtime, etc.
+### - Use bulk import sparingly to avoid hitting TMDB rate limits

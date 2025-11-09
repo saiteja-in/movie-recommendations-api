@@ -1,0 +1,2 @@
+Username: moviefan, Email: moviefan@example.com, Password: password123
+Username: filmcritic, Email: critic@example.com, Password: password123

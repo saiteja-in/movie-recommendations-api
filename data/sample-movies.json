@@ -1,0 +1,122 @@
+[
+  {
+    "id": "movie_1",
+    "title": "The Shawshank Redemption",
+    "genre": ["drama", "crime"],
+    "year": 1994,
+    "description": "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
+    "director": "Frank Darabont",
+    "actors": ["Tim Robbins", "Morgan Freeman", "Bob Gunton"],
+    "rating": 9.3
+  },
+  {
+    "id": "movie_2",
+    "title": "The Dark Knight",
+    "genre": ["action", "crime", "drama"],
+    "year": 2008,
+    "description": "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests.",
+    "director": "Christopher Nolan",
+    "actors": ["Christian Bale", "Heath Ledger", "Aaron Eckhart"],
+    "rating": 9.0
+  },
+  {
+    "id": "movie_3",
+    "title": "Pulp Fiction",
+    "genre": ["crime", "drama"],
+    "year": 1994,
+    "description": "The lives of two mob hitmen, a boxer, a gangster and his wife intertwine in four tales of violence and redemption.",
+    "director": "Quentin Tarantino",
+    "actors": ["John Travolta", "Uma Thurman", "Samuel L. Jackson"],
+    "rating": 8.9
+  },
+  {
+    "id": "movie_4",
+    "title": "Inception",
+    "genre": ["action", "sci-fi", "thriller"],
+    "year": 2010,
+    "description": "A thief who steals corporate secrets through dream-sharing technology is given the inverse task of planting an idea into a CEO's mind.",
+    "director": "Christopher Nolan",
+    "actors": ["Leonardo DiCaprio", "Marion Cotillard", "Tom Hardy"],
+    "rating": 8.8
+  },
+  {
+    "id": "movie_5",
+    "title": "The Matrix",
+    "genre": ["action", "sci-fi"],
+    "year": 1999,
+    "description": "A computer programmer is led to fight an underground war against powerful computers who have constructed his entire reality with a system called the Matrix.",
+    "director": "The Wachowskis",
+    "actors": ["Keanu Reeves", "Laurence Fishburne", "Carrie-Anne Moss"],
+    "rating": 8.7
+  },
+  {
+    "id": "movie_6",
+    "title": "Forrest Gump",
+    "genre": ["drama", "romance"],
+    "year": 1994,
+    "description": "The presidencies of Kennedy and Johnson, the Vietnam War, and other historical events unfold from the perspective of an Alabama man with an IQ of 75.",
+    "director": "Robert Zemeckis",
+    "actors": ["Tom Hanks", "Robin Wright", "Gary Sinise"],
+    "rating": 8.8
+  },
+  {
+    "id": "movie_7",
+    "title": "Goodfellas",
+    "genre": ["biography", "crime", "drama"],
+    "year": 1990,
+    "description": "The story of Henry Hill and his life in the mob, covering his relationship with his wife Karen Hill and his mob partners.",
+    "director": "Martin Scorsese",
+    "actors": ["Robert De Niro", "Ray Liotta", "Joe Pesci"],
+    "rating": 8.7
+  },
+  {
+    "id": "movie_8",
+    "title": "The Lord of the Rings: The Return of the King",
+    "genre": ["action", "adventure", "drama"],
+    "year": 2003,
+    "description": "Gandalf and Aragorn lead the World of Men against Sauron's army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.",
+    "director": "Peter Jackson",
+    "actors": ["Elijah Wood", "Viggo Mortensen", "Ian McKellen"],
+    "rating": 8.9
+  },
+  {
+    "id": "movie_9",
+    "title": "Star Wars: Episode IV - A New Hope",
+    "genre": ["action", "adventure", "fantasy"],
+    "year": 1977,
+    "description": "Luke Skywalker joins forces with a Jedi Knight, a cocky pilot, and two droids to save the galaxy from the Empire's world-destroying battle station.",
+    "director": "George Lucas",
+    "actors": ["Mark Hamill", "Harrison Ford", "Carrie Fisher"],
+    "rating": 8.6
+  },
+  {
+    "id": "movie_10",
+    "title": "Avengers: Endgame",
+    "genre": ["action", "adventure", "drama"],
+    "year": 2019,
+    "description": "After the devastating events of Infinity War, the Avengers assemble once more to reverse Thanos' actions and restore balance to the universe.",
+    "director": "Anthony Russo, Joe Russo",
+    "actors": ["Robert Downey Jr.", "Chris Evans", "Mark Ruffalo"],
+    "rating": 8.4
+  },
+  {
+    "id": "movie_11",
+    "title": "The Godfather",
+    "genre": ["crime", "drama"],
+    "year": 1972,
+    "description": "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.",
+    "director": "Francis Ford Coppola",
+    "actors": ["Marlon Brando", "Al Pacino", "James Caan"],
+    "rating": 9.2
+  },
+  {
+    "id": "movie_12",
+    "title": "Interstellar",
+    "genre": ["adventure", "drama", "sci-fi"],
+    "year": 2014,
+    "description": "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
+    "director": "Christopher Nolan",
+    "actors": ["Matthew McConaughey", "Anne Hathaway", "Jessica Chastain"],
+    "rating": 8.6
+  }
+]

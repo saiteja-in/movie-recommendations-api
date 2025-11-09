@@ -1,0 +1,74 @@
+### Variables
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@token = your-jwt-token-here
+
+### Rate a Movie (Like + 5 stars)
+POST {{baseUrl}}/api/ratings/movie/movie_1
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "rating": 5,
+  "liked": true
+}
+
+### Rate Another Movie (Like + 4 stars)
+POST {{baseUrl}}/api/ratings/movie/movie_2
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "rating": 4,
+  "liked": true
+}
+
+### Rate Movie (Dislike + 2 stars)
+POST {{baseUrl}}/api/ratings/movie/movie_3
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "rating": 2,
+  "liked": false
+}
+
+### Rate Movie (Like + 5 stars)
+POST {{baseUrl}}/api/ratings/movie/movie_4
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "rating": 5,
+  "liked": true
+}
+
+### Rate Movie (Like + 4 stars)
+POST {{baseUrl}}/api/ratings/movie/movie_5
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "rating": 4,
+  "liked": true
+}
+
+### Get User's Ratings
+GET {{baseUrl}}/api/ratings/user
+Authorization: Bearer {{token}}
+
+### Get Movie Ratings (for specific movie)
+GET {{baseUrl}}/api/ratings/movie/movie_1
+
+### Get Another Movie's Ratings
+GET {{baseUrl}}/api/ratings/movie/movie_2
+
+### Update Rating (rate same movie again)
+POST {{baseUrl}}/api/ratings/movie/movie_1
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "rating": 4,
+  "liked": true
+}

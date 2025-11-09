@@ -1,0 +1,177 @@
+### Enhanced Features Test - New API Capabilities
+
+### Variables
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJtYno4OXlydnhlZGh4NjJpM2ViIiwiaWF0IjoxNzUwMDg3Mjk4LCJleHAiOjE3NTAxNzM2OTh9.hQZbofr_dvEnkErkAT2lbp1R17k0Fh5cAOTxVWaJROM
+
+### 1. Test Watchlist Features
+
+### Add Movie to Watchlist
+POST {{baseUrl}}/api/watchlist/movie_1
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "priority": "high",
+  "notes": "Must watch this classic!"
+}
+
+### Add Another Movie to Watchlist
+POST {{baseUrl}}/api/watchlist/movie_4
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "priority": "medium",
+  "notes": "Interesting sci-fi concept"
+}
+
+### Get User's Watchlist
+GET {{baseUrl}}/api/watchlist
+Authorization: Bearer {{token}}
+
+### Remove Movie from Watchlist
+DELETE {{baseUrl}}/api/watchlist/movie_1
+Authorization: Bearer {{token}}
+
+### 2. Test Advanced Recommendation Algorithms
+
+### Hybrid Recommendations (Default)
+GET {{baseUrl}}/api/recommendations?algorithm=hybrid&limit=5
+Authorization: Bearer {{token}}
+
+### Collaborative Filtering Recommendations
+GET {{baseUrl}}/api/recommendations?algorithm=collaborative&limit=5
+Authorization: Bearer {{token}}
+
+### Content-Based Recommendations
+GET {{baseUrl}}/api/recommendations?algorithm=content&limit=5
+Authorization: Bearer {{token}}
+
+### AI-Powered Recommendations
+GET {{baseUrl}}/api/recommendations?algorithm=ai&limit=5
+Authorization: Bearer {{token}}
+
+### 3. Test Enhanced Movie Features
+
+### Create Movie with Extended Fields
+POST {{baseUrl}}/api/movies
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "title": "Dune: Part Two",
+  "genre": ["sci-fi", "adventure", "drama"],
+  "year": 2024,
+  "description": "Paul Atreides unites with Chani and the Fremen while on a warpath of revenge against the conspirators who destroyed his family.",
+  "director": "Denis Villeneuve",
+  "actors": ["Timothée Chalamet", "Zendaya", "Rebecca Ferguson"],
+  "runtime": 166,
+  "language": "English",
+  "country": "USA",
+  "rating": 8.5
+}
+
+### Update Movie
+PUT {{baseUrl}}/api/movies/movie_1
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "runtime": 142,
+  "language": "English",
+  "country": "USA"
+}
+
+### Search Movies with Enhanced Filters
+GET {{baseUrl}}/api/movies/search?genre=sci-fi&minRating=8&language=English
+
+### Test Pagination
+GET {{baseUrl}}/api/movies?page=1&limit=5
+
+### 4. Test Enhanced Rating with Reviews
+
+### Rate Movie with Review
+POST {{baseUrl}}/api/ratings/movie/movie_2
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "rating": 5,
+  "liked": true,
+  "review": "Incredible cinematography and Heath Ledger's performance was phenomenal!"
+}
+
+### Rate Another Movie with Review
+POST {{baseUrl}}/api/ratings/movie/movie_12
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "rating": 5,
+  "liked": true,
+  "review": "Mind-bending science fiction at its finest. Nolan outdid himself!"
+}
+
+### 5. Test Rate Limiting (Run these quickly to trigger limits)
+
+### Multiple rapid requests to test rate limiting
+GET {{baseUrl}}/api/recommendations
+Authorization: Bearer {{token}}
+
+###
+GET {{baseUrl}}/api/recommendations
+Authorization: Bearer {{token}}
+
+###
+GET {{baseUrl}}/api/recommendations
+Authorization: Bearer {{token}}
+
+###
+GET {{baseUrl}}/api/recommendations
+Authorization: Bearer {{token}}
+
+###
+GET {{baseUrl}}/api/recommendations
+Authorization: Bearer {{token}}
+
+### 6. Advanced Search and Filtering
+
+### Search by Director
+GET {{baseUrl}}/api/movies/search?director=Christopher Nolan
+
+### Search by Year Range and Genre
+GET {{baseUrl}}/api/movies/search?genre=action&year=2008
+
+### Search with Multiple Filters
+GET {{baseUrl}}/api/movies/search?genre=sci-fi&minRating=8&maxRating=9&page=1&limit=3
+
+### 7. Test Genre Recommendations (Should be Cached)
+GET {{baseUrl}}/api/recommendations/genre/sci-fi
+
+### Test Multiple Times to See Caching Effect
+GET {{baseUrl}}/api/recommendations/genre/sci-fi
+
+### 8. Test Validation (These Should Fail)
+
+### Invalid Movie Creation
+POST {{baseUrl}}/api/movies
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "title": "",
+  "genre": [],
+  "year": 1500
+}
+
+### Invalid Rating
+POST {{baseUrl}}/api/ratings/movie/movie_1
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "rating": 10,
+  "liked": "not-boolean"
+}

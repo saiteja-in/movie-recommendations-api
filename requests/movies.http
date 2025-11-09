@@ -1,0 +1,52 @@
+### Variables
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@token = your-jwt-token-here
+
+### Get All Movies
+GET {{baseUrl}}/api/movies
+
+### Get Movie by ID
+GET {{baseUrl}}/api/movies/movie_1
+
+### Search Movies by Title
+GET {{baseUrl}}/api/movies/search?query=dark
+
+### Search Movies by Genre
+GET {{baseUrl}}/api/movies/search?genre=action
+
+### Search Movies by Year
+GET {{baseUrl}}/api/movies/search?year=1994
+
+### Search Movies with Multiple Filters
+GET {{baseUrl}}/api/movies/search?genre=sci-fi&year=2010
+
+### Add New Movie (requires authentication)
+POST {{baseUrl}}/api/movies
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "title": "Blade Runner 2049",
+  "genre": ["sci-fi", "thriller", "drama"],
+  "year": 2017,
+  "description": "A young blade runner's discovery of a long-buried secret leads him to track down former blade runner Rick Deckard.",
+  "director": "Denis Villeneuve",
+  "actors": ["Ryan Gosling", "Harrison Ford", "Ana de Armas"],
+  "rating": 8.0
+}
+
+### Add Another Movie
+POST {{baseUrl}}/api/movies
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "title": "Dune",
+  "genre": ["sci-fi", "adventure", "drama"],
+  "year": 2021,
+  "description": "A noble family becomes embroiled in a war for control over the galaxy's most valuable asset.",
+  "director": "Denis Villeneuve",
+  "actors": ["Timothée Chalamet", "Rebecca Ferguson", "Oscar Isaac"],
+  "rating": 8.1
+}

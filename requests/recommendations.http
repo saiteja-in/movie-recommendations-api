@@ -1,0 +1,29 @@
+### Variables
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@token = your-jwt-token-here
+
+### Get AI-Powered Recommendations (requires authentication and some rated movies)
+GET {{baseUrl}}/api/recommendations
+Authorization: Bearer {{token}}
+
+### Get Genre-Based Recommendations - Action
+GET {{baseUrl}}/api/recommendations/genre/action
+
+### Get Genre-Based Recommendations - Sci-Fi
+GET {{baseUrl}}/api/recommendations/genre/sci-fi
+
+### Get Genre-Based Recommendations - Drama
+GET {{baseUrl}}/api/recommendations/genre/drama
+
+### Get Genre-Based Recommendations - Crime
+GET {{baseUrl}}/api/recommendations/genre/crime
+
+### Get Genre-Based Recommendations - Adventure
+GET {{baseUrl}}/api/recommendations/genre/adventure
+
+### Get Genre-Based Recommendations - Romance
+GET {{baseUrl}}/api/recommendations/genre/romance
+
+### Get Genre-Based Recommendations - Fantasy
+GET {{baseUrl}}/api/recommendations/genre/fantasy

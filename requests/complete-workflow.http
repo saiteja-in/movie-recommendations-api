@@ -1,0 +1,112 @@
+### Complete API Workflow Test
+### Follow this sequence to test the full recommendation system
+
+### Variables
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+### Step 1: Health Check
+GET {{baseUrl}}/health
+
+### Step 2: Register a New User
+# @name registerUser
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "username": "demo_user",
+  "email": "demo@example.com",
+  "password": "password123"
+}
+
+### Step 3: Extract Token and Login (use token from Step 2)
+@token = {{registerUser.response.body.data.token}}
+
+### Step 4: Get User Profile
+GET {{baseUrl}}/api/auth/profile
+Authorization: Bearer {{token}}
+
+### Step 5: View All Available Movies
+GET {{baseUrl}}/api/movies
+
+### Step 6: Rate Some Movies (Build Preferences)
+POST {{baseUrl}}/api/ratings/movie/movie_1
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "rating": 5,
+  "liked": true
+}
+
+###
+POST {{baseUrl}}/api/ratings/movie/movie_2
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "rating": 5,
+  "liked": true
+}
+
+###
+POST {{baseUrl}}/api/ratings/movie/movie_4
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "rating": 4,
+  "liked": true
+}
+
+###
+POST {{baseUrl}}/api/ratings/movie/movie_5
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "rating": 5,
+  "liked": true
+}
+
+###
+POST {{baseUrl}}/api/ratings/movie/movie_3
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "rating": 2,
+  "liked": false
+}
+
+### Step 7: Get User's Ratings
+GET {{baseUrl}}/api/ratings/user
+Authorization: Bearer {{token}}
+
+### Step 8: Get AI Recommendations
+GET {{baseUrl}}/api/recommendations
+Authorization: Bearer {{token}}
+
+### Step 9: Get Genre Recommendations
+GET {{baseUrl}}/api/recommendations/genre/sci-fi
+
+### Step 10: Search Movies
+GET {{baseUrl}}/api/movies/search?genre=action&year=2008
+
+### Step 11: Add a New Movie
+POST {{baseUrl}}/api/movies
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "title": "Mad Max: Fury Road",
+  "genre": ["action", "adventure", "sci-fi"],
+  "year": 2015,
+  "description": "In a post-apocalyptic wasteland, Max teams up with Furiosa to flee from a tyrant who controls the land's water supply.",
+  "director": "George Miller",
+  "actors": ["Tom Hardy", "Charlize Theron", "Nicholas Hoult"],
+  "rating": 8.1
+}
+
+### Step 12: View Updated Movie List
+GET {{baseUrl}}/api/movies
