@@ -16,7 +16,16 @@ app.use(helmet());
 app.use(cors());
 app.use(morgan('combined'));
 app.use(generalLimiter); // Apply rate limiting
-app.use(express.json());
+app.use(express.json({
+  strict: false,
+  type: (req) => {
+    if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
+      return false;
+    }
+    const contentType = req.headers['content-type'] || '';
+    return contentType.includes('application/json');
+  }
+}));
 app.use(express.urlencoded({ extended: true }));
 
 // Health check endpoint

@@ -71,7 +71,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       res.status(400).json(response);
       return;
     }
-
+    console.log(email," ",password)
     const user = await db.getUserByEmail(email);
     if (!user) {
       const response: ApiResponse = {
@@ -81,6 +81,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       res.status(401).json(response);
       return;
     }
+    console.log("user ",user)
 
     const isValidPassword = await UserModel.verifyPassword(password, user.password);
     if (!isValidPassword) {

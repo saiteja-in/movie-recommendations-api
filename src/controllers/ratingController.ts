@@ -81,7 +81,17 @@ export const getUserRatings = async (req: AuthRequest, res: Response): Promise<v
 
 export const getMovieRatings = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { movieId } = req.params;
+    // Support both path parameter and query parameter
+    const movieId = req.params.movieId || (req.query.movieId as string);
+    
+    if (!movieId) {
+      const response: ApiResponse = {
+        success: false,
+        error: 'Movie ID is required',
+      };
+      res.status(400).json(response);
+      return;
+    }
     
     const movie = await db.getMovieById(movieId);
     if (!movie) {
