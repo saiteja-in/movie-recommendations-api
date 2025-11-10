@@ -7,7 +7,7 @@ class DatabaseService {
 
   private constructor() {
     this.prisma = new PrismaClient({
-      log: ['query', 'error', 'warn'],
+      log: [], // Disable all logging
     });
   }
 
