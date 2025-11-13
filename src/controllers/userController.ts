@@ -42,7 +42,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const newUser = await db.createUser(user);
 
     const token = generateToken(newUser.id);
-    console.log("token while registering ",token)
     const userResponse = { ...newUser, password: undefined };
 
     const response: ApiResponse<{ user: Partial<User>; token: string }> = {
@@ -60,7 +59,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const login = async (req: Request, res: Response): Promise<void> => {
+export const  login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
 
@@ -72,7 +71,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       res.status(400).json(response);
       return;
     }
-    console.log(email," ",password)
     const user = await db.getUserByEmail(email);
     if (!user) {
       const response: ApiResponse = {
@@ -82,7 +80,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       res.status(401).json(response);
       return;
     }
-    console.log("user ",user)
 
     const isValidPassword = await UserModel.verifyPassword(password, user.password);
     if (!isValidPassword) {
@@ -95,7 +92,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     const token = generateToken(user.id);
-    console.log("token while logging ",token)
 
     const userResponse = { ...user, password: undefined };
 

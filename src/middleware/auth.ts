@@ -9,7 +9,7 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
   try {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
-    console.log("token", token)
+    // console.log("token", token)
     
 
     if (!token) {
@@ -19,8 +19,8 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
 
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
     const user = await db.getUserById(decoded.userId);
-    console.log("decoded",decoded.userId)
-    console.log("user",user)
+    // console.log("decoded",decoded.userId)
+    // console.log("user",user)
 
     if (!user) {
       res.status(401).json({ success: false, error: 'Invalid token' });
