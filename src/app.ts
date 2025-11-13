@@ -1,13 +1,19 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { db } from './services/database';
 import { generalLimiter } from './middleware/rateLimit';
-
+import AuthRoute from "./routes/auth"
+import EnrichmentRoute from "./routes/enrichment"
+import MoviesRoute from "./routes/movies"
+import RatingsRoute from "./routes/ratings"
+import RecommendationsRoute from "./routes/recommendations"
+import TMDBRoute from "./routes/tmdb"
+import WatchlistRoute from "./routes/watchlist"
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -29,18 +35,18 @@ app.use(express.json({
 app.use(express.urlencoded({ extended: true }));
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', async (req: Request, res: Response) => {
   res.json({ success: true, message: 'Movie Recommendation API is running' });
 });
 
 // Routes will be added here
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/movies', require('./routes/movies'));
-app.use('/api/ratings', require('./routes/ratings'));
-app.use('/api/recommendations', require('./routes/recommendations'));
-app.use('/api/watchlist', require('./routes/watchlist'));
-app.use('/api/tmdb', require('./routes/tmdb'));
-app.use('/api/enrichment', require('./routes/enrichment'));
+app.use('/api/auth', AuthRoute);
+app.use('/api/movies', MoviesRoute);
+app.use('/api/ratings', RatingsRoute);
+app.use('/api/recommendations',RecommendationsRoute);
+app.use('/api/watchlist', WatchlistRoute);
+app.use('/api/tmdb', TMDBRoute);
+app.use('/api/enrichment', EnrichmentRoute);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -69,17 +75,17 @@ const startServer = async (): Promise<void> => {
 };
 
 // Graceful shutdown
-process.on('SIGINT', async () => {
-  console.log('Shutting down gracefully...');
-  await db.disconnect();
-  process.exit(0);
-});
+// process.on('SIGINT', async () => {
+//   console.log('Shutting down gracefully...');
+//   await db.disconnect();
+//   process.exit(0);
+// });
 
-process.on('SIGTERM', async () => {
-  console.log('Shutting down gracefully...');
-  await db.disconnect();
-  process.exit(0);
-});
+// process.on('SIGTERM', async () => {
+//   console.log('Shutting down gracefully...');
+//   await db.disconnect();
+//   process.exit(0);
+// });
 
 startServer();
 

@@ -49,4 +49,4 @@ router.put('/movies/:movieId/metadata',
   updateMovieMetadata
 );
 
-export = router;
+export default router;

@@ -39,10 +39,11 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     }
 
     const user = await UserModel.create(userData);
-    await db.createUser(user);
+    const newUser = await db.createUser(user);
 
-    const token = generateToken(user.id);
-    const userResponse = { ...user, password: undefined };
+    const token = generateToken(newUser.id);
+    console.log("token while registering ",token)
+    const userResponse = { ...newUser, password: undefined };
 
     const response: ApiResponse<{ user: Partial<User>; token: string }> = {
       success: true,
@@ -94,6 +95,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     const token = generateToken(user.id);
+    console.log("token while logging ",token)
+
     const userResponse = { ...user, password: undefined };
 
     const response: ApiResponse<{ user: Partial<User>; token: string }> = {

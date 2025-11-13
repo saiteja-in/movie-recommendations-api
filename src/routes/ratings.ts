@@ -22,4 +22,4 @@ router.get('/user', authenticateToken, getUserRatings);
 
 router.get('/movie/:movieId', validateParams(MovieIdSchema), getMovieRatings);
 
-export = router;
+export default router;

@@ -18,5 +18,4 @@ router.get('/',
 );
 
 router.get('/genre/:genre', getGenreRecommendations);
-
-export = router;
+export default router;

@@ -66,4 +66,4 @@ router.post('/import/popular',
   importPopularMovies
 );
 
-export = router;
+export default router;

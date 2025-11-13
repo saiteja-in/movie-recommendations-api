@@ -26,4 +26,4 @@ router.delete('/:movieId',
   removeFromWatchlist
 );
 
-export = router;
+export default router;

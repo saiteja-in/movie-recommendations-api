@@ -27,4 +27,4 @@ router.put('/:id', authenticateToken, validateParams(MovieIdSchema), validateBod
 
 router.delete('/:id', authenticateToken, validateParams(MovieIdSchema), deleteMovie);
 
-export = router;
+export default router;
