@@ -125,13 +125,36 @@ jobs:
           kubectl get services
           kubectl get ingress
 
-      - name: Wait for LoadBalancer external IP
+      - name: Get Ingress Controller LoadBalancer IP
         run: |
-          echo "Waiting for LoadBalancer external IP..."
-          while [ -z $(kubectl get service node-app-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}') ]; do
+          echo "Getting Ingress Controller LoadBalancer IP..."
+          INGRESS_IP=""
+          for i in {1..12}; do
+            INGRESS_IP=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || echo "")
+            if [ -n "$INGRESS_IP" ]; then
+              break
+            fi
+            echo "Waiting for Ingress Controller LoadBalancer IP... ($i/12)"
             sleep 10
           done
-          echo "External IP: $(kubectl get service node-app-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}')"
+          if [ -z "$INGRESS_IP" ]; then
+            echo "Checking all LoadBalancer services..."
+            kubectl get svc -A | grep LoadBalancer
+            INGRESS_IP=$(kubectl get svc -A | grep -i ingress | grep LoadBalancer | awk '{print $5}' | head -1 || echo "")
+          fi
+          if [ -n "$INGRESS_IP" ]; then
+            echo "=========================================="
+            echo "✅ Ingress Controller External IP: $INGRESS_IP"
+            echo "=========================================="
+            echo ""
+            echo "📋 DNS Configuration:"
+            echo "   Add A record: api.teja.live -> $INGRESS_IP"
+            echo "=========================================="
+          else
+            echo "⚠️  Ingress Controller LoadBalancer IP not found yet"
+            echo "It may take a few minutes to provision. Check DigitalOcean dashboard:"
+            echo "   Networking -> Load Balancers"
+          fi
 
       - name: Check ingress status
         run: |
@@ -153,8 +176,8 @@ jobs:
           kubectl get services
           echo "\nIngress:"
           kubectl get ingress
-          echo "\nExternal IP:"
-          kubectl get service node-app-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+          echo "\nIngress Controller IP (for DNS):"
+          kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || kubectl get svc -A | grep -i ingress | grep LoadBalancer | awk '{print $5}' | head -1 || echo "Check DigitalOcean dashboard: Networking -> Load Balancers"
 
       - name: Check pod logs (if failure)
         if: failure()
