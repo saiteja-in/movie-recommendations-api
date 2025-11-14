@@ -53,12 +53,44 @@ jobs:
         run: |
           sed -i 's|image: registry.digitalocean.com/movierec/node-app:.*|image: registry.digitalocean.com/movierec/node-app:'"${GITHUB_SHA::8}"'|' k8s/deployment.yaml
 
+      - name: Check if cert-manager is installed
+        id: check_cert_manager
+        run: |
+          if kubectl get namespace cert-manager 2>/dev/null; then
+            echo "installed=true" >> $GITHUB_OUTPUT
+          else
+            echo "installed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install cert-manager
+        if: steps.check_cert_manager.outputs.installed == 'false'
+        run: |
+          kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.3/cert-manager.yaml
+          echo "Waiting for cert-manager to be ready..."
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=cert-manager -n cert-manager --timeout=300s || true
+
+      - name: Wait for cert-manager CRDs
+        if: steps.check_cert_manager.outputs.installed == 'false'
+        run: |
+          echo "Waiting for ClusterIssuer CRD to be available..."
+          for i in {1..30}; do
+            if kubectl get crd clusterissuers.cert-manager.io 2>/dev/null; then
+              echo "ClusterIssuer CRD is available"
+              break
+            fi
+            echo "Waiting for ClusterIssuer CRD... ($i/30)"
+            sleep 10
+          done
+
       - name: Apply Kubernetes manifests
         run: |
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
           kubectl apply -f k8s/ingress.yaml
-          kubectl apply -f k8s/cluster-issuer.yaml
+
+      - name: Apply ClusterIssuer (cert-manager)
+        run: |
+          kubectl apply -f k8s/cluster-issuer.yaml || echo "Warning: ClusterIssuer may already exist or cert-manager is not fully ready"
 
       - name: Create and apply Kubernetes secrets
         env:
