@@ -1,0 +1,136 @@
+name: Deploy to DigitalOcean Kubernetes
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry
+        run: doctl registry login --expiry-seconds 600
+
+      - name: Build and push Docker image
+        env:
+          REGISTRY_NAME: movierec
+        run: |
+          docker build -t registry.digitalocean.com/${REGISTRY_NAME}/node-app:${GITHUB_SHA::8} .
+          docker push registry.digitalocean.com/${REGISTRY_NAME}/node-app:${GITHUB_SHA::8}
+
+      - name: Save DigitalOcean kubeconfig
+        run: doctl kubernetes cluster kubeconfig save digital-ocean-cluster
+
+      - name: Delete existing resources
+        run: |
+          kubectl delete deployment node-app --ignore-not-found
+          kubectl delete service node-app-service --ignore-not-found
+          kubectl delete ingress node-app-ingress --ignore-not-found
+          kubectl delete secret app-secrets --ignore-not-found
+          kubectl delete secret registry-digitaloceanregistry --ignore-not-found
+        continue-on-error: true
+
+      - name: Create image pull secret
+        run: |
+          kubectl create secret docker-registry registry-digitaloceanregistry \
+            --docker-server=registry.digitalocean.com \
+            --docker-username=${{ secrets.DIGITALOCEAN_USERNAME }} \
+            --docker-password=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} \
+
+      - name: Update deployment file
+        env:
+          REGISTRY_NAME: movierec
+        run: |
+          sed -i 's|image: registry.digitalocean.com/movierec/node-app:.*|image: registry.digitalocean.com/movierec/node-app:'"${GITHUB_SHA::8}"'|' k8s/deployment.yaml
+
+      - name: Apply Kubernetes manifests
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+          kubectl apply -f k8s/ingress.yaml
+          kubectl apply -f k8s/cluster-issuer.yaml
+
+      - name: Create and apply Kubernetes secrets
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          TMDB_BASE_URL: ${{ secrets.TMDB_BASE_URL }}
+          TMDB_IMAGE_BASE_URL: ${{ secrets.TMDB_IMAGE_BASE_URL }}
+        run: |
+          cat <<EOF > k8s/app-secrets-filled.yaml
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: app-secrets
+          type: Opaque
+          data:
+            DATABASE_URL: $(echo -n "$DATABASE_URL" | base64 -w 0)
+            JWT_SECRET: $(echo -n "$JWT_SECRET" | base64 -w 0)
+            OPENAI_API_KEY: $(echo -n "$OPENAI_API_KEY" | base64 -w 0)
+            TMDB_API_KEY: $(echo -n "$TMDB_API_KEY" | base64 -w 0)
+            TMDB_BASE_URL: $(echo -n "$TMDB_BASE_URL" | base64 -w 0)
+            TMDB_IMAGE_BASE_URL: $(echo -n "$TMDB_IMAGE_BASE_URL" | base64 -w 0)
+          EOF
+          kubectl apply -f k8s/app-secrets-filled.yaml
+          rm k8s/app-secrets-filled.yaml  # Clean up the filled secret file
+
+      - name: Check deployment status
+        run: |
+          kubectl rollout status deployment/node-app
+          kubectl get pods
+          kubectl get services
+          kubectl get ingress
+
+      - name: Wait for LoadBalancer external IP
+        run: |
+          echo "Waiting for LoadBalancer external IP..."
+          while [ -z $(kubectl get service node-app-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}') ]; do
+            sleep 10
+          done
+          echo "External IP: $(kubectl get service node-app-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}')"
+
+      - name: Check ingress status
+        run: |
+          echo "Ingress status:"
+          kubectl describe ingress node-app-ingress
+
+      - name: Check pod logs
+        run: |
+          echo "Pod logs:"
+          kubectl logs -l app=node-app --tail=100
+
+      - name: Deployment summary
+        run: |
+          echo "Deployment Summary:"
+          echo "-------------------"
+          echo "Pods:"
+          kubectl get pods -l app=node-app
+          echo "\nServices:"
+          kubectl get services
+          echo "\nIngress:"
+          kubectl get ingress
+          echo "\nExternal IP:"
+          kubectl get service node-app-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+
+      - name: Check pod logs (if failure)
+        if: failure()
+        run: |
+          for pod in $(kubectl get pods -l app=node-app -o jsonpath='{.items[*].metadata.name}'); do
+            echo "Logs for $pod:"
+            kubectl logs $pod
+            echo "-------------------"
+          done
+
+      - name: Describe deployment (if failure)
+        if: failure()
+        run: |
+          kubectl describe deployment node-app
