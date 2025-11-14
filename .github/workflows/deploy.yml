@@ -38,11 +38,14 @@ jobs:
         continue-on-error: true
 
       - name: Create image pull secret
+        env:
+          DO_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
         run: |
           kubectl create secret docker-registry registry-digitaloceanregistry \
             --docker-server=registry.digitalocean.com \
-            --docker-username=${{ secrets.DIGITALOCEAN_USERNAME }} \
-            --docker-password=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} \
+            --docker-username=$DO_TOKEN \
+            --docker-password=$DO_TOKEN \
+            --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Update deployment file
         env:
