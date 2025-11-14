@@ -26,7 +26,7 @@ jobs:
           docker push registry.digitalocean.com/${REGISTRY_NAME}/node-app:${GITHUB_SHA::8}
 
       - name: Save DigitalOcean kubeconfig
-        run: doctl kubernetes cluster kubeconfig save digital-ocean-cluster
+        run: doctl kubernetes cluster kubeconfig save k8s-1-33-1-do-5-blr1-1763101949513
 
       - name: Delete existing resources
         run: |
