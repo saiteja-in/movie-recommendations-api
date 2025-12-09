@@ -7,6 +7,8 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { db } from './services/database';
 import { generalLimiter } from './middleware/rateLimit';
+import { metricsMiddleware } from './middleware/metrics';
+import { register } from './services/metrics';
 import AuthRoute from "./routes/auth"
 import EnrichmentRoute from "./routes/enrichment"
 import MoviesRoute from "./routes/movies"
@@ -21,6 +23,7 @@ const PORT = process.env.PORT || 3000;
 app.use(helmet());
 app.use(cors());
 app.use(morgan('combined'));
+app.use(metricsMiddleware); // Metrics collection middleware (before rate limiting)
 app.use(generalLimiter); // Apply rate limiting
 app.use(express.json({
   strict: false,
@@ -37,6 +40,16 @@ app.use(express.urlencoded({ extended: true }));
 // Health check endpoint
 app.get('/health', async (req: Request, res: Response) => {
   res.json({ success: true, message: 'Movie Recommendation API is running' });
+});
+
+// Metrics endpoint for Prometheus
+app.get('/metrics', async (req: Request, res: Response) => {
+  try {
+    res.set('Content-Type', register.contentType);
+    res.end(await register.metrics());
+  } catch (error) {
+    res.status(500).end(error);
+  }
 });
 
 // Routes will be added here
